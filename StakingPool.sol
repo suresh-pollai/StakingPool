@@ -138,4 +138,19 @@ function calculateReward(address _staker)
         reward = (stakerShare * totalDistribution) / 1e18;
     }
 
+ function getCurrentHourlyRewardEmission() public view returns (uint256) {
+        uint256 elapsedTime = block.timestamp - poolStartTime;
+        return (poolDistributionAmount / poolDuration) * elapsedTime / 1 hours;
+    }
 
+    function getActiveStakersCount() public view returns (uint256) {
+        return activeStakers.length;
+    }
+
+    function getAllStakers() public view returns (address[] memory) {
+        return activeStakers;
+    }
+
+    function getTotalStakedAmount() public view returns (uint256) {
+        return totalStakedAmount;
+    }
