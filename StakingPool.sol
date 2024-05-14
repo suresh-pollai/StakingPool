@@ -38,6 +38,7 @@ contract StakingPool {
         lockinDuration = _lockinDuration;
     }
 
+//Stake function
     function stake(uint256 _amount) external {
         require(_amount > 0, "Amount must be greater than 0");
         require(
@@ -61,6 +62,40 @@ contract StakingPool {
         activeStakers.push(msg.sender);
 
         emit Staked(msg.sender, _amount);
+    }
+
+//Unstake function
+
+   function unstake() external {
+        require(
+            stakers[msg.sender].stakedAmount > 0,
+            "No stake to unstake"
+        );
+        require(
+            block.timestamp >=
+                stakers[msg.sender].lastClaimedTimestamp + lockinDuration,
+            "Lock-in period not passed"
+        );
+
+        uint256 stakedAmount = stakers[msg.sender].stakedAmount;
+        delete stakers[msg.sender];
+        totalStakedAmount -= stakedAmount;
+
+        // Remove staker from active stakers
+        for (uint256 i = 0; i < activeStakers.length; i++) {
+            if (activeStakers[i] == msg.sender) {
+                activeStakers[i] = activeStakers[activeStakers.length - 1];
+                activeStakers.pop();
+                break;
+            }
+        }
+
+        require(
+            IERC20(stakingToken).transfer(msg.sender, stakedAmount),
+            "Transfer failed"
+        );
+
+        emit Unstaked(msg.sender, stakedAmount);
     }
 
 
