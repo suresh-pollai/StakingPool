@@ -98,4 +98,24 @@ contract StakingPool {
         emit Unstaked(msg.sender, stakedAmount);
     }
 
+// claimReward function
+function claimReward() external {
+        require(
+            stakers[msg.sender].stakedAmount > 0,
+            "No stake to claim rewards"
+        );
+
+        uint256 reward = calculateReward(msg.sender);
+        stakers[msg.sender].lastClaimedTimestamp = block.timestamp;
+
+        totalRewardsDistributed += reward;
+        totalPoolAmountLeft -= reward;
+
+        require(
+            IERC20(stakingToken).transfer(msg.sender, reward),
+            "Transfer failed"
+        );
+
+        emit RewardClaimed(msg.sender, reward);
+    }
 
