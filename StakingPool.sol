@@ -37,3 +37,30 @@ contract StakingPool {
         poolDuration = _poolDuration;
         lockinDuration = _lockinDuration;
     }
+
+    function stake(uint256 _amount) external {
+        require(_amount > 0, "Amount must be greater than 0");
+        require(
+            stakers[msg.sender].stakedAmount == 0,
+            "Already staked in the pool"
+        );
+        require(
+            IERC20(stakingToken).transferFrom(
+                msg.sender,
+                address(this),
+                _amount
+            ),
+            "Transfer failed"
+        );
+
+        stakers[msg.sender] = Staker({
+            stakedAmount: _amount,
+            lastClaimedTimestamp: block.timestamp
+        });
+        totalStakedAmount += _amount;
+        activeStakers.push(msg.sender);
+
+        emit Staked(msg.sender, _amount);
+    }
+
+
