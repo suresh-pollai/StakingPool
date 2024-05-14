@@ -119,3 +119,23 @@ function claimReward() external {
         emit RewardClaimed(msg.sender, reward);
     }
 
+function calculateReward(address _staker)
+        public view returns (uint256 reward)
+    {
+        uint256 elapsedTime = block.timestamp - poolStartTime;
+        uint256 totalDistribution = poolDistributionAmount;
+
+        // Adjust distribution amount if pool duration is not completed yet
+        if (elapsedTime < poolDuration) {
+            totalDistribution =
+                (poolDistributionAmount * elapsedTime) /
+                poolDuration;
+        }
+
+        uint256 stakerShare =
+            (stakers[_staker].stakedAmount * 1e18) / totalStakedAmount;
+
+        reward = (stakerShare * totalDistribution) / 1e18;
+    }
+
+
