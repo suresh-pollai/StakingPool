@@ -154,3 +154,23 @@ function calculateReward(address _staker)
     function getTotalStakedAmount() public view returns (uint256) {
         return totalStakedAmount;
     }
+
+ function getStakerDetails(address _staker)
+        public
+        view
+        returns (
+            uint256 stakedAmount,
+            uint256 accumulatedReward,
+            address stakerAddress,
+            uint256 stakedTimestamp
+        )
+    {
+        Staker memory staker = stakers[_staker];
+        return (
+            staker.stakedAmount,
+            calculateReward(_staker),
+            _staker,
+            staker.lastClaimedTimestamp
+        );
+    }
+}
